@@ -1,0 +1,58 @@
+{
+  "name": "redux-firestore-hooks",
+  "version": "0.1.0",
+  "description": "Very simple React Hooks for Firestore to Redux",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "code-fix": "run-s eslint-fix prettier",
+    "eslint": "eslint --ext ts --cache src",
+    "eslint-fix": "eslint --ext ts --cache --fix src",
+    "prettier": "prettier src --write"
+  },
+  "files": [
+    "dist/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/macinjoke/redux-firestore-hooks.git"
+  },
+  "keywords": [
+    "redux",
+    "firestore",
+    "firebase",
+    "react-hooks",
+    "hooks",
+    "react"
+  ],
+  "author": "macinjoke",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/macinjoke/redux-firestore-hooks/issues"
+  },
+  "homepage": "https://github.com/macinjoke/redux-firestore-hooks#readme",
+  "devDependencies": {
+    "@types/react": "^17.0.37",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
+    "eslint": "^8.3.0",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "firebase": "^9.5.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.5.0",
+    "react": "^17.0.2",
+    "redux": "^4.1.2",
+    "rollup": "^2.60.1",
+    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-typescript2": "^0.31.1"
+  },
+  "peerDependencies": {
+    "react": ">= 16.8.0"
+  }
+}
