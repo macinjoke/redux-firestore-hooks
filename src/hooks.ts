@@ -1,11 +1,10 @@
 import type { DocumentSnapshot, QuerySnapshot } from 'firebase/firestore'
 import { useCallback } from 'react'
-import type { Dispatch, AnyAction } from 'redux'
+import type { Dispatch } from 'redux'
 
-export function useApplyCollection<Key extends string>(
-  dispatch: Dispatch,
-  actionCreator: (param: { key: Key; dataGroup: { [id in string]: unknown } }) => AnyAction,
-) {
+import { collectionUpdated, documentUpdated } from './actions'
+
+export function useApplyCollection<Key extends string>(dispatch: Dispatch) {
   return useCallback(
     (key: Key) => {
       return (querySnapshot: QuerySnapshot): void => {
@@ -15,24 +14,21 @@ export function useApplyCollection<Key extends string>(
             [doc.id]: doc.data(),
           }
         }, {})
-        dispatch(actionCreator({ key, dataGroup }))
+        dispatch(collectionUpdated({ key, dataGroup }))
       }
     },
-    [actionCreator, dispatch],
+    [dispatch],
   )
 }
 
-export function useApplyDocument<Key extends string>(
-  dispatch: Dispatch,
-  actionCreator: (param: { key: Key; id: string; data: unknown }) => AnyAction,
-) {
+export function useApplyDocument<Key extends string>(dispatch: Dispatch) {
   return useCallback(
     (key: Key) => {
       return (docSnapshot: DocumentSnapshot): void => {
         const data = docSnapshot.data()
-        dispatch(actionCreator({ key, id: docSnapshot.id, data }))
+        dispatch(documentUpdated({ key, id: docSnapshot.id, data }))
       }
     },
-    [actionCreator, dispatch],
+    [dispatch],
   )
 }
