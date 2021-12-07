@@ -8,4 +8,4 @@ export {
   documentUpdated,
   FirestoreAction,
 } from './actions'
-export { FirestoreState, firestoreReducer } from './reducer'
+export { FirestoreState, createReducer } from './reducer'
