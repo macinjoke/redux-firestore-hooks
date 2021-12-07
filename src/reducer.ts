@@ -4,6 +4,11 @@ import { COLLECTION_UPDATED, DOCUMENT_UPDATED, FirestoreAction } from './actions
 
 export type FirestoreState = Record<string, Record<string, unknown>>
 
+/**
+ * Create reducer for Firestore.
+ * To specify State type, use generics.
+ * @returns Reducer for Firestore action
+ */
 export function createReducer<State extends FirestoreState>() {
   const firestoreReducer = (state: State = {} as any, _action: AnyAction): State => {
     const action = _action as FirestoreAction

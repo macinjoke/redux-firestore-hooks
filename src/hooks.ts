@@ -4,6 +4,12 @@ import type { Dispatch } from 'redux'
 
 import { collectionUpdated, documentUpdated } from './actions'
 
+/**
+ * Return query snapshot handler.
+ * The handler dispatches collectionUpdated action and the document data list will be updated.
+ * @param dispatch Redux dispatch function
+ * @returns query snapshot handler (return value of useCallback).
+ */
 export function useApplyCollection<Key extends string>(dispatch: Dispatch) {
   return useCallback(
     (key: Key) => {
@@ -21,6 +27,12 @@ export function useApplyCollection<Key extends string>(dispatch: Dispatch) {
   )
 }
 
+/**
+ * Return document snapshot handler.
+ * The handler dispatches documentUpdated action and the document data will be updated.
+ * @param dispatch Redux dispatch function
+ * @returns document snapshot handler (return value of useCallback).
+ */
 export function useApplyDocument<Key extends string>(dispatch: Dispatch) {
   return useCallback(
     (key: Key) => {
