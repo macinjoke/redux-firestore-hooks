@@ -1,76 +1,66 @@
 # redux-firestore-hooks
 
-FirestoreをサブスクライブしてReduxに反映させるためのシンプルな2つのユーティリティフックス。
+FirestoreをサブスクライブしてReduxに反映させるためのシンプルなツール。
+アクションを発行する2つのReactカスタムフックとReducerを提供する。
 
-[redux-firestore](https://github.com/prescottprue/redux-firestore) は覚えなければいけないライブラリのインタフェースが多く、Firestoreの知見があったとしてもそれなりの学習コストがかかるという欠点がある。redux-firestore-hooks ではなるべく素のfirestoreのインターフェースを使うようにしシンプルなI/Fにすることで導入・学習コストを下げることが利点。
+(時間がなく、日本語ドキュメントのみ作成。モチベあれば英語ドキュメントを作成する)
 
-しかし、作ってから思ったがライブラリにするにしては微妙なI/Fになりそうだ。なのでpublishもしてないが、サンプルコード的価値はあるかもなので残しておく。
+# Motivation
+
+似たライブラリとして [redux-firestore](https://github.com/prescottprue/redux-firestore) はFirestoreをラップした高度なAPIを提供しているため新たにそれらのAPIを覚えなくてはならない。それゆえFirestoreの知見があったとしても理解しずらいという欠点がある。また、バンドルサイズも大きい。
+
+redux-firestore-hooks では素のFirestoreのインターフェースを使いつつReduxと連携できるシンプルなI/Fを採用することで導入・学習コストを下げることができる。
+
 # 使い方
 
 ```ts
-// reduxFirestore.ts
+// store.ts
+// Redux Toolkit の書き方で書いているが他の書き方でもok
 
-import {
-  useApplyCollection as useApplyCollection_,
-  useApplyDocument as useApplyDocument_,
-} from 'redux-firestore-hooks'
-
-export function useApplyCollection() {
-  const dispatch = useDispatch()
-  return useApplyCollection_(dispatch, collectionUpdated)
-}
-
-export function useApplyDocument() {
-  const dispatch = useDispatch()
-  return useApplyDocument_(dispatch, documentUpdated)
-}
-
-
-// firestoreState.ts
-// Redux Toolkit の書き方で書いているが、他の書き方でもok
+import { configureStore } from '@reduxjs/toolkit'
+import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux'
+import { createReducer } from 'redux-firestore-hooks'
 
 export type User = {
-  name: string
+  displayName: string
+  photoURL: string
 }
 
 export type Chat = {
   userId: string
   text: string
-  createdAt: string
 }
 
-export type State = {
-  users: Record<string, User>
-  chats: Record<string, Chat>
+type FirestoreState = {
+  users?: { [id in string]: User }
+  chats?: { [id in string]: Chat }
 }
 
-const initialState: State = {
-  users: {},
-  chats: {},
-}
-
-const firestoreSlice = createSlice({
-  name: 'firestore',
-  initialState,
-  reducers: {
-    collectionUpdated(
-      state,
-      action: PayloadAction<{ key: keyof State; dataGroup: Record<string, any> }>,
-    ) {
-      state[action.payload.key] = action.payload.dataGroup
-    },
-    documentUpdated(state, action: PayloadAction<{ key: keyof State; id: string; data: any }>) {
-      state[action.payload.key][action.payload.id] = action.payload.data
-    },
+const store = configureStore({
+  reducer: {
+    // firestore stateの型を効かすにはここで型を入れる。
+    firestore: createReducer<FirestoreState>(),
   },
 })
 
-// App.ts
+export type RootState = ReturnType<typeof store.getState>
+
+export type AppDispatch = typeof store.dispatch
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const useAppDispatch = () => useDispatch<AppDispatch>()
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
+
+export default store
+
+
+// App.tsx
 import { collection, doc, onSnapshot, query } from 'firebase/firestore'
+import { useApplyCollection, useApplyDocument } from 'redux-firestore-hooks'
 
 const App = ({ userId }) => {
-  const applyDocument = useApplyDocument()
-  const applyCollection = useApplyCollection()
+  const dispatch = useAppDispatch()
+  const applyDocument = useApplyDocument(dispatch)
+  const applyCollection = useApplyCollection(dispatch)
 
   // Appマウント時にchatsコレクションをサブスクライブしfirestore.chats stateに反映させる
   useEffect(() => {
@@ -87,5 +77,34 @@ const App = ({ userId }) => {
       unsubscribe()
     }
   }, [applyDocument])
+
+  return null
 }
 ```
+
+Appコンポーネントがマウントされ、Firestoreへのサブスクライブが完了したときのReduxのstateは以下のようになる。
+
+```ts
+{
+  firestore: {
+    users: {
+      xj0cjs: {
+        displayName: 'Alice'
+        photoURL: 'https://example.com/alice.png'
+      },
+    }
+    chats: {
+      fajei8: {
+        userId: 'xj0cjs',
+        text: 'こんにちは、Bob',
+      },
+      d8cjs2: {
+        userId: 'f82bma',
+        text: 'こんにちは、Alice',
+      }
+    }
+  }
+}
+```
+
+
