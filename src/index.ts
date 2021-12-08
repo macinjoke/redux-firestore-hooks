@@ -6,6 +6,9 @@ export {
   DOCUMENT_UPDATED,
   DocumentUpdatedPayload,
   documentUpdated,
+  CLEAR,
+  ClearPayload,
+  clear,
   FirestoreAction,
 } from './actions'
 export { FirestoreState, createReducer } from './reducer'

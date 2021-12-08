@@ -1,6 +1,6 @@
 import { AnyAction } from 'redux'
 
-import { COLLECTION_UPDATED, DOCUMENT_UPDATED, FirestoreAction } from './actions'
+import { COLLECTION_UPDATED, DOCUMENT_UPDATED, CLEAR, FirestoreAction } from './actions'
 
 export type FirestoreState = Record<string, Record<string, unknown>>
 
@@ -23,6 +23,19 @@ export function createReducer<State extends FirestoreState>() {
             ...state[action.payload.key],
             [action.payload.id]: action.payload.data,
           },
+        }
+      }
+      case CLEAR: {
+        const newState = state
+        if (typeof action.payload === 'string') {
+          const key = action.payload
+          delete newState[key]
+          return newState
+        }
+        if (Array.isArray(action.payload)) {
+          const [key, id] = action.payload
+          delete newState[key][id]
+          return newState
         }
       }
       default: {

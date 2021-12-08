@@ -49,6 +49,33 @@ export const documentUpdated = (
 }
 
 /**
+ * Action type string for clearing Firestore data
+ */
+export const CLEAR = `${PREFIX}clear` as const
+
+/**
+ * Action payload for clearing Firestore data
+ */
+export type ClearPayload = string | [string, string]
+
+/**
+ * Action creator for Firestore document update
+ */
+export const clear = (
+  payload: ClearPayload,
+): {
+  type: typeof CLEAR
+  payload: ClearPayload
+} => {
+  return {
+    type: CLEAR,
+    payload,
+  }
+}
+
+/**
  * Action type for Firestore Actions
  */
-export type FirestoreAction = ReturnType<typeof collectionUpdated | typeof documentUpdated>
+export type FirestoreAction = ReturnType<
+  typeof collectionUpdated | typeof documentUpdated | typeof clear
+>
