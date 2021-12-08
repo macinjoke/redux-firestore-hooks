@@ -55,7 +55,7 @@ export default store
 
 // App.tsx
 import { collection, doc, onSnapshot, query } from 'firebase/firestore'
-import { useApplyCollection, useApplyDocument } from 'redux-firestore-hooks'
+import { useApplyCollection, useApplyDocument, clear } from 'redux-firestore-hooks'
 
 const App = ({ userId }) => {
   const dispatch = useAppDispatch()
@@ -67,6 +67,8 @@ const App = ({ userId }) => {
     const unsubscribeChats = onSnapshot(query(collection(db, 'chats')), applyCollection('chats'))
     return () => {
       unsubscribeChats()
+      // clear chats data
+      dispatch(clear('chats'))
     }
   }, [applyCollection])
 
@@ -75,8 +77,10 @@ const App = ({ userId }) => {
     const unsubscribeUser = onSnapshot(doc(db, `users/${userId}`), applyDocument('users'))
     return () => {
       unsubscribe()
+      // clear user data by userId
+      dispatch(clear(['users', userId]))
     }
-  }, [applyDocument])
+  }, [userId, applyDocument])
 
   return null
 }
