@@ -5,32 +5,35 @@ FirestoreをサブスクライブしてReduxに反映させるためのシンプ
 
 (時間がなく、日本語ドキュメントのみ作成。モチベあれば英語ドキュメントを作成する)
 
-# Motivation
+## Motivation
 
 似たライブラリとして [redux-firestore](https://github.com/prescottprue/redux-firestore) はFirestoreをラップした高度なAPIを提供しているため新たにそれらのAPIを覚えなくてはならない。それゆえFirestoreの知見があったとしても理解しずらいという欠点がある。また、バンドルサイズも大きい。
 
 redux-firestore-hooks では素のFirestoreのインターフェースを使いつつReduxと連携できるシンプルなI/Fを採用することで導入・学習コストを下げることができる。
 
-# 使い方
+## 使い方
+
+store.ts
 
 ```ts
-// store.ts
 // Redux Toolkit の書き方で書いているが他の書き方でもok
 
 import { configureStore } from '@reduxjs/toolkit'
-import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux'
 import { createReducer } from 'redux-firestore-hooks'
 
+// Firestore の ドキュメントの型
 export type User = {
   displayName: string
   photoURL: string
 }
 
+// Firestore の ドキュメントの型
 export type Chat = {
   userId: string
   text: string
 }
 
+// idにはドキュメントのidが入る
 type FirestoreState = {
   users?: { [id in string]: User }
   chats?: { [id in string]: Chat }
@@ -45,20 +48,19 @@ const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>
 
-export type AppDispatch = typeof store.dispatch
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const useAppDispatch = () => useDispatch<AppDispatch>()
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
-
 export default store
+```
 
+App.tsx
 
+```ts
 // App.tsx
 import { collection, doc, onSnapshot, query } from 'firebase/firestore'
+import { useDispatch, useSelector } from 'react-redux'
 import { useApplyCollection, useApplyDocument, clear } from 'redux-firestore-hooks'
 
 const App = ({ userId }) => {
-  const dispatch = useAppDispatch()
+  const dispatch = useDispatch()
   const applyDocument = useApplyDocument(dispatch)
   const applyCollection = useApplyCollection(dispatch)
 
