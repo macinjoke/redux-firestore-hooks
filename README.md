@@ -11,6 +11,12 @@ FirestoreをサブスクライブしてReduxに反映させるためのシンプ
 
 redux-firestore-hooks では素のFirestoreのインターフェースを使いつつReduxと連携できるシンプルなI/Fを採用することで導入・学習コストを下げることができる。
 
+## Install
+
+```shell
+npm install redux-firestore-hooks
+```
+
 ## 使い方
 
 store.ts
