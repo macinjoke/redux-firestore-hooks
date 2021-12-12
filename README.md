@@ -1,36 +1,48 @@
 # redux-firestore-hooks
 
-FirestoreをサブスクライブしてReduxに反映させるためのシンプルなツール。
-アクションを発行する2つのReactカスタムフックとReducerを提供する。
+A simple tool for subscribing to Firestore and reflecting it in Redux.
 
-(時間がなく、日本語ドキュメントのみ作成。モチベあれば英語ドキュメントを作成する)
+It provides:
+- Two custom hooks dispatching an action for Firestore data.
+- Reducer receiving these actions.
 
-# Motivation
+## Motivation
 
-似たライブラリとして [redux-firestore](https://github.com/prescottprue/redux-firestore) はFirestoreをラップした高度なAPIを提供しているため新たにそれらのAPIを覚えなくてはならない。それゆえFirestoreの知見があったとしても理解しずらいという欠点がある。また、バンドルサイズも大きい。
+A similar Library is [redux-firestore](https://github.com/prescottprue/redux-firestore), which provides an API that wraps Firestore.
+So you have to learn those APIs anew. Therefore, even if you have knowledge of Firebase SDK I/F, it is difficult to understand.
+In addition, the bundle size is large.
 
-redux-firestore-hooks では素のFirestoreのインターフェースを使いつつReduxと連携できるシンプルなI/Fを採用することで導入・学習コストを下げることができる。
+redux-firestore-hooks adopt the design that directly use Firebase SDK I/F. So you can learn easily and keep code simple.
 
-# 使い方
+## Install
+
+```shell
+npm install redux-firestore-hooks
+```
+
+## Usage
+
+store.ts
 
 ```ts
-// store.ts
-// Redux Toolkit の書き方で書いているが他の書き方でもok
+// Writing for Redux Toolkit, but you can write other type store.
 
 import { configureStore } from '@reduxjs/toolkit'
-import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux'
 import { createReducer } from 'redux-firestore-hooks'
 
+// type for Firestore document
 export type User = {
   displayName: string
   photoURL: string
 }
 
+// type for Firestore document
 export type Chat = {
   userId: string
   text: string
 }
 
+// id is document ID
 type FirestoreState = {
   users?: { [id in string]: User }
   chats?: { [id in string]: Chat }
@@ -38,31 +50,30 @@ type FirestoreState = {
 
 const store = configureStore({
   reducer: {
-    // firestore stateの型を効かすにはここで型を入れる。
+    // To work firestore state type, put the type here.
     firestore: createReducer<FirestoreState>(),
   },
 })
 
 export type RootState = ReturnType<typeof store.getState>
 
-export type AppDispatch = typeof store.dispatch
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const useAppDispatch = () => useDispatch<AppDispatch>()
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
-
 export default store
+```
 
+App.tsx
 
+```ts
 // App.tsx
 import { collection, doc, onSnapshot, query } from 'firebase/firestore'
+import { useDispatch, useSelector } from 'react-redux'
 import { useApplyCollection, useApplyDocument, clear } from 'redux-firestore-hooks'
 
 const App = ({ userId }) => {
-  const dispatch = useAppDispatch()
+  const dispatch = useDispatch()
   const applyDocument = useApplyDocument(dispatch)
   const applyCollection = useApplyCollection(dispatch)
 
-  // Appマウント時にchatsコレクションをサブスクライブしfirestore.chats stateに反映させる
+  // When App is mounted, subscribing chats and reflecting it in firestore.chats state
   useEffect(() => {
     const unsubscribeChats = onSnapshot(query(collection(db, 'chats')), applyCollection('chats'))
     return () => {
@@ -72,7 +83,7 @@ const App = ({ userId }) => {
     }
   }, [applyCollection])
 
-  // userIdに応じてusersドキュメントをサブスクライブしてfirestore.users stateに反映させる
+  // Subscribe to the user document as the userId changes and reflect it in firestore.users state
   useEffect(() => {
     const unsubscribeUser = onSnapshot(doc(db, `users/${userId}`), applyDocument('users'))
     return () => {
@@ -86,7 +97,7 @@ const App = ({ userId }) => {
 }
 ```
 
-Appコンポーネントがマウントされ、Firestoreへのサブスクライブが完了したときのReduxのstateは以下のようになる。
+When the App component is mounted and the subscription to the Firestore is complete, Redux's state will be: 
 
 ```ts
 {
@@ -100,15 +111,37 @@ Appコンポーネントがマウントされ、Firestoreへのサブスクラ�
     chats: {
       fajei8: {
         userId: 'xj0cjs',
-        text: 'こんにちは、Bob',
+        text: 'Hello, Bob',
       },
       d8cjs2: {
         userId: 'f82bma',
-        text: 'こんにちは、Alice',
+        text: 'Hello, Alice',
       }
     }
   }
 }
 ```
 
+## Tips
+
+If It's annoying to write useDispatch at each component, write this wrapper functions.
+
+```ts
+import {
+  useApplyCollection as useApplyCollection_,
+  useApplyDocument as useApplyDocument_,
+} from 'redux-firestore-hooks'
+
+import { useDispatch } from 'react-redux'
+
+export function useApplyCollection() {
+  const dispatch = useDispatch()
+  return useApplyCollection_(dispatch)
+}
+
+export function useApplyDocument() {
+  const dispatch = useDispatch()
+  return useApplyDocument_(dispatch)
+}
+```
 
