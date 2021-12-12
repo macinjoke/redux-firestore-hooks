@@ -60,6 +60,9 @@ export type ClearPayload = string | [string, string]
 
 /**
  * Action creator for Firestore document update
+ * @param payload
+ *     If key string provided, delete specified key collection.
+ *     If [key string, id string] provided, delete specified id document of specified key collection.
  */
 export const clear = (
   payload: ClearPayload,
