@@ -122,4 +122,26 @@ When the App component is mounted and the subscription to the Firestore is compl
 }
 ```
 
+## Tips
+
+If It's annoying to write useDispatch at each component, write this wrapper functions.
+
+```ts
+import {
+  useApplyCollection as useApplyCollection_,
+  useApplyDocument as useApplyDocument_,
+} from 'redux-firestore-hooks'
+
+import { useDispatch } from 'react-redux'
+
+export function useApplyCollection() {
+  const dispatch = useDispatch()
+  return useApplyCollection_(dispatch)
+}
+
+export function useApplyDocument() {
+  const dispatch = useDispatch()
+  return useApplyDocument_(dispatch)
+}
+```
 
