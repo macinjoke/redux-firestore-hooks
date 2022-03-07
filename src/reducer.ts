@@ -27,14 +27,12 @@ export function createReducer<State extends FirestoreState>() {
       }
       case CLEAR: {
         const newState = state
-        if (typeof action.payload === 'string') {
-          const key = action.payload
-          delete newState[key]
-          return newState
-        }
-        if (Array.isArray(action.payload)) {
-          const [key, id] = action.payload
+        const { key, id } = action.payload
+        if (id) {
           delete newState[key][id]
+          return newState
+        } else {
+          delete newState[key]
           return newState
         }
       }
