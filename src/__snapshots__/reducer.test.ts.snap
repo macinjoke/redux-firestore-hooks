@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`clear 1`] = `
+Object {
+  "foo": Object {
+    "y": Object {
+      "y1": true,
+    },
+    "z": Object {
+      "z1": null,
+    },
+  },
+}
+`;
+
+exports[`clear 2`] = `Object {}`;
+
+exports[`collectionUpdated 1`] = `
+Object {
+  "foo": Object {
+    "x": Object {
+      "x1": "x1 text",
+      "x2": 11,
+    },
+    "y": Object {
+      "y1": true,
+      "y2": null,
+    },
+  },
+}
+`;
+
+exports[`collectionUpdated 2`] = `
+Object {
+  "foo": Object {},
+}
+`;
+
+exports[`documentUpdated 1`] = `
+Object {
+  "foo": Object {
+    "id1": Object {
+      "x1": "x1 text",
+      "x2": 11,
+    },
+  },
+}
+`;
+
+exports[`documentUpdated 2`] = `
+Object {
+  "foo": Object {
+    "id1": Object {},
+  },
+}
+`;
