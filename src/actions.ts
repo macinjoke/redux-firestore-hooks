@@ -56,23 +56,24 @@ export const CLEAR = `${PREFIX}clear` as const
 /**
  * Action payload for clearing Firestore data
  */
-export type ClearPayload = string | [string, string]
+export type ClearPayload = { key: string; id?: string }
 
 /**
- * Action creator for Firestore document update
+ * Action creator for clearing Firestore data
  * @param payload
- *     If key string provided, delete specified key collection.
- *     If [key string, id string] provided, delete specified id document of specified key collection.
+ *     If key string specified, delete its key collection.
+ *     If key string and id string specified, delete its id document of its key collection.
  */
 export const clear = (
-  payload: ClearPayload,
+  key: string,
+  id?: string,
 ): {
   type: typeof CLEAR
   payload: ClearPayload
 } => {
   return {
     type: CLEAR,
-    payload,
+    payload: { key, id },
   }
 }
 

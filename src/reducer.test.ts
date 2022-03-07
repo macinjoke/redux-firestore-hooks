@@ -64,7 +64,7 @@ test('clear', () => {
     },
   }
 
-  const state1 = reducer(initialState, clear(['foo', 'x']))
+  const state1 = reducer(initialState, clear('foo', 'x'))
   expect(state1).toMatchSnapshot()
   const state2 = reducer(state1, clear('foo'))
   expect(state2).toMatchSnapshot()
