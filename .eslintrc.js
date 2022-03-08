@@ -28,7 +28,7 @@ module.exports = {
         },
       },
     ],
-    '@typescript-eslint/no-unused-vars': [2, { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-unused-vars': [2, { argsIgnorePattern: '^_', ignoreRestSiblings: true }],
     '@typescript-eslint/explicit-function-return-type': 0,
     '@typescript-eslint/explicit-module-boundary-types': 0,
     '@typescript-eslint/no-empty-interface': 0,
