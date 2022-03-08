@@ -26,13 +26,13 @@ export function createReducer<State extends FirestoreState>() {
         }
       }
       case CLEAR: {
-        const newState = state
         const { key, id } = action.payload
         if (id) {
-          delete newState[key][id]
-          return newState
+          const { [id]: _, ...docs } = state[key]
+          return { ...state, [key]: docs }
         } else {
-          delete newState[key]
+          const { [key]: _, ...newState } = state
+          // @ts-expect-error I'm right
           return newState
         }
       }
